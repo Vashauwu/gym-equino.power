@@ -1,2 +1,5 @@
-python-telegram-bot==21.6
-openpyxl
+fastapi
+uvicorn[standard]
+python-telegram-bot
+gspread
+google-auth
