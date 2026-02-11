@@ -81,6 +81,13 @@ async def webhook(req: Request):
 @app.get("/")
 def health():
     return {"status": "ok"}
+    
+@app.get("/debug/sheets")
+def debug_sheets():
+    ws = get_ws()
+    ws.append_row(["debug", "ok"], value_input_option="USER_ENTERED")
+    return {"ok": True}
 
     
+
 
