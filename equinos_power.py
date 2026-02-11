@@ -52,6 +52,11 @@ async def gym(update: Update, context: ContextTypes.DEFAULT_TYPE):
 tg_app = Application.builder().token(BOT_TOKEN).build()
 tg_app.add_handler(CommandHandler("gym", gym))
 
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("✅ Bot vivo. Prueba /gym")
+
+tg_app.add_handler(CommandHandler("start", start))
+
 
 @app.on_event("startup")
 async def startup():
@@ -104,6 +109,7 @@ async def webhook(req: Request):
 
 
     
+
 
 
 
