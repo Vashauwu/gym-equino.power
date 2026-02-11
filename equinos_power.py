@@ -17,6 +17,7 @@ GOOGLE_SA_JSON = os.environ["GOOGLE_SERVICE_ACCOUNT_JSON"]
 
 app = FastAPI()
 
+
 def get_ws():
     info = json.loads(GOOGLE_SA_JSON)
     scopes = ["https://www.googleapis.com/auth/spreadsheets"]
@@ -24,6 +25,7 @@ def get_ws():
     gc = gspread.authorize(creds)
     sh = gc.open_by_key(SHEET_ID)
     return sh.worksheet(TAB_NAME)
+
 
 async def gym(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = update.effective_user
@@ -42,14 +44,31 @@ async def gym(update: Update, context: ContextTypes.DEFAULT_TYPE):
     ws = get_ws()
     ws.append_row(row, value_input_option="USER_ENTERED")
 
-    await update.message.reply_text("✅ Asistencia registrada. ¡Bien ahí! 💪")
+    # En algunos casos (mensajes de canal, etc.) update.message puede venir None
+    if update.message:
+        await update.message.reply_text("✅ Asistencia registrada. ¡Bien ahí! 💪")
+
 
 tg_app = Application.builder().token(BOT_TOKEN).build()
 tg_app.add_handler(CommandHandler("gym", gym))
 
+
 @app.on_event("startup")
 async def startup():
+    # ✅ Inicializa y arranca PTB antes de procesar updates (evita RuntimeError)
+    await tg_app.initialize()
+    await tg_app.start()
+
+    # ✅ Configura el webhook apuntando a tu Render URL
     await tg_app.bot.set_webhook(f"{PUBLIC_URL}/webhook")
+
+
+@app.on_event("shutdown")
+async def shutdown():
+    # ✅ Apagado limpio
+    await tg_app.stop()
+    await tg_app.shutdown()
+
 
 @app.post("/webhook")
 async def webhook(req: Request):
@@ -58,6 +77,10 @@ async def webhook(req: Request):
     await tg_app.process_update(update)
     return {"ok": True}
 
+
 @app.get("/")
 def health():
     return {"status": "ok"}
+
+    
+
