@@ -87,7 +87,23 @@ def debug_sheets():
     ws = get_ws()
     ws.append_row(["debug", "ok"], value_input_option="USER_ENTERED")
     return {"ok": True}
+    
+@app.post("/webhook")
+async def webhook(req: Request):
+    data = await req.json()
+
+    # 👇 Esto te dice si Telegram está mandando mensajes
+    msg = data.get("message") or data.get("edited_message") or {}
+    text = msg.get("text")
+    chat = msg.get("chat", {})
+    print("INCOMING:", {"text": text, "chat_id": chat.get("id"), "chat_type": chat.get("type")})
+
+    update = Update.de_json(data, tg_app.bot)
+    await tg_app.process_update(update)
+    return {"ok": True}
+
 
     
+
 
 
