@@ -11,7 +11,7 @@ import gspread
 from google.oauth2.service_account import Credentials
 
 # ===== ENV =====
-BOT_TOKEN = os.environ["BOT_TOKEN"]
+BOT_TOKEN = os.environ["TELEGRAM_BOT_TOKEN"]
 SHEET_ID = os.environ["SHEET_ID"]
 TAB_NAME = os.environ.get("TAB_NAME", "asistencias")
 PUBLIC_URL = os.environ["PUBLIC_URL"].rstrip("/")
@@ -85,3 +85,4 @@ async def webhook(req: Request):
 @app.get("/")
 def health():
     return {"status": "ok"}
+
